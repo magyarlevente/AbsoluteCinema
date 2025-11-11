@@ -13,7 +13,7 @@ public class Main extends Application {
         new MainController(view);
 
         Scene scene = new Scene(view.getRoot(), 800, 600);
-        primaryStage.setTitle("Mozi App (MVC)");
+        primaryStage.setTitle("Absolute Cinema");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
