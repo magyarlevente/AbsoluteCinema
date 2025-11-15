@@ -6,6 +6,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
 public class MainView {
+
     private BorderPane root;
     private ListView<String> filmLista;
     private VBox rightPane;
@@ -17,14 +18,13 @@ public class MainView {
     }
 
     private void setupUI() {
-        // Bal oldal: Film lista
         filmLista = new ListView<>();
         root.setLeft(filmLista);
 
-        // Jobb oldal: Részletek és foglalás
         rightPane = new VBox(10);
         foglalasGomb = new Button("Foglalás");
         rightPane.getChildren().add(foglalasGomb);
+
         root.setCenter(rightPane);
     }
 
