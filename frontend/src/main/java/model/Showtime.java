@@ -1,7 +1,7 @@
 package model;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter; // Importáljuk a formázót
+import java.time.format.DateTimeFormatter; // Fontos import a formázáshoz
 
 /**
  * Adatmodell egy adott vetítési időponthoz.
@@ -11,7 +11,7 @@ public class Showtime {
     private LocalDateTime time;
     private String cinemaName;
 
-    // Formázó a szép dátum/idő megjelenítéshez (pl. 11.17. 19:30)
+    // JAVÍTÁS: Létrehozunk egy formázót a "szép" dátumhoz
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("MM.dd. HH:mm");
 
     // Konstruktor
@@ -27,12 +27,12 @@ public class Showtime {
     public String getCinemaName() { return cinemaName; }
 
     /**
-     * Megjelenítéshez: Visszaadja a vetítés idejét és helyszínét a kívánt formátumban.
-     * @return Formázott dátum és idő, valamint terem string.
+     * Megjelenítéshez
      */
     @Override
     public String toString() {
-        // JAVÍTVA: A formázott stringet adjuk vissza
+        // JAVÍTÁS: A formázott stringet adjuk vissza a "fura" dátum helyett
+        // Eredmény: "11.18. 12:30 (Terem 1)"
         return time.format(FORMATTER) + " (" + cinemaName + ")";
     }
 }

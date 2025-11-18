@@ -35,7 +35,9 @@
                             <children>
                                 <ImageView fx:id="posterView" fitHeight="300.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" style="-fx-border-color: #cccccc; -fx-border-width: 1; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0.0, 2, 2);" />
                                 <Label fx:id="durationLabel" text="Játékidő: X perc" style="-fx-font-weight: bold;" />
-                                <Label fx:id="ageRatingLabel" text="Korhatár: X+" style="-fx-text-fill: #ff6600; -fx-font-weight: bold; -fx-font-size: 14px;" />
+                                <!-- KIEMELÉS: Korhatár címke narancssárga háttérrel -->
+                                <Label fx:id="ageRatingLabel" text="Korhatár: X+"
+                                       style="-fx-background-color: #ff6600; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 5 10; -fx-background-radius: 5; -fx-font-size: 14px;" />
                             </children>
                         </VBox>
                         <!-- JOBB OLDAL: LEÍRÁS ÉS IDŐPONTOK -->
@@ -49,7 +51,7 @@
                                                 <Font name="System Bold" size="22.0" />
                                             </font>
                                         </Label>
-                                        <Label fx:id="descriptionLabel" alignment="TOP_LEFT" style="-fx-font-size: 14px;" text="Film leírás..." wrapText="true" />
+                                        <Label fx:id="descriptionLabel" alignment="TOP_LEFT" style="-fx-font-size: 14px; -fx-text-fill: #333333;" text="Film leírás..." wrapText="true" />
                                     </children>
                                 </VBox>
                                 <!-- Vetítési Időpontok -->
@@ -60,8 +62,9 @@
                                                 <Font name="System Bold" size="22.0" />
                                             </font>
                                         </Label>
+                                        <!-- A FlowPane továbbra is a vetítési időpontok konténere, a Controller ebbe fogja a dátum szerinti csoportokat generálni -->
                                         <FlowPane fx:id="showtimesFlowPane" hgap="10.0" vgap="10.0" style="-fx-padding: 10; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-border-radius: 5;">
-                                            <!-- Itt jelennek meg dinamikusan az időpont gombok -->
+                                            <!-- Itt jelennek meg dinamikusan a DÁTUM FEJLÉCEK és az időpont gombok -->
                                         </FlowPane>
                                         <Label text="Kattints az időpontra a helyfoglaláshoz. (Adatátadás: film ID + időpont ID)" textFill="#666666" style="-fx-font-style: italic;" />
                                     </children>

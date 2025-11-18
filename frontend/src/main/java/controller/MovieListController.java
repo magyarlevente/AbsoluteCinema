@@ -14,6 +14,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority; // Az import helye
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.Movie;
@@ -22,6 +23,7 @@ import model.Showtime;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,147 +34,210 @@ public class MovieListController implements BaseController {
 
     private Stage stage;
     private ObservableList<Movie> allMovies;
+    private ObservableList<Movie> filteredMovies; // A szűrt filmek listája
 
     @FXML private VBox movieListContainer;
     @FXML private ScrollPane movieScrollPane;
     @FXML private DatePicker datePicker;
     @FXML private ComboBox<String> genreFilter;
-    @FXML private ComboBox<String> cinemaFilter; // Új szűrő a mozihoz/városhoz
+    @FXML private ComboBox<String> cinemaFilter;
     @FXML private Button backButton;
+
+    // Megjelenítéshez használt dátum formátum
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
     @Override
     public void setStage(Stage stage) {
         this.stage = stage;
-    }
-
-    @FXML
-    public void initialize() {
-        // Dummy adatok betöltése
-        allMovies = FXCollections.observableArrayList(MovieData.createDummyMovies());
-
-        // Szűrő ComboBox-ok feltöltése
-        List<String> genres = allMovies.stream()
-                .map(Movie::getGenre)
-                .distinct()
-                .collect(Collectors.toList());
-        genreFilter.setItems(FXCollections.observableArrayList(genres));
-        genreFilter.setPromptText("Műfaj szűrés...");
-
-        // Mozi nevek gyűjtése (a dummy adatokból)
-        List<String> cinemas = allMovies.stream()
-                .flatMap(m -> m.getShowtimes().stream())
-                .map(Showtime::getCinemaName)
-                .distinct()
-                .collect(Collectors.toList());
-        cinemaFilter.setItems(FXCollections.observableArrayList(cinemas));
-        cinemaFilter.setPromptText("Mozi / Város szűrés...");
-
-
-        // Eseménykezelők beállítása (a szűrés meghívásához)
-        datePicker.valueProperty().addListener((obs, oldVal, newVal) -> filterMovies());
-        genreFilter.valueProperty().addListener((obs, oldVal, newVal) -> filterMovies());
-        cinemaFilter.valueProperty().addListener((obs, oldVal, newVal) -> filterMovies());
-
-        // Kezdeti lista megjelenítése
+        // Az inicializálás a Stage beállítása után történjen
+        initializeData();
+        populateFilters();
         displayMovies(allMovies);
     }
 
-    @FXML
-    private void filterMovies() {
-        LocalDate selectedDate = datePicker.getValue();
-        String selectedGenre = genreFilter.getSelectionModel().getSelectedItem();
-        String selectedCinema = cinemaFilter.getSelectionModel().getSelectedItem();
-
-        List<Movie> filtered = allMovies.stream()
-                .filter(m -> {
-                    // Műfaj szűrés
-                    boolean genreMatch = selectedGenre == null || m.getGenre().equals(selectedGenre);
-
-                    // Mozi/Város és Dátum szűrés (Összekapcsolva)
-                    boolean hasMatchingShowtime = m.getShowtimes().stream()
-                            .anyMatch(st -> {
-                                boolean dateMatch = selectedDate == null || st.getTime().toLocalDate().isEqual(selectedDate);
-                                boolean cinemaMatch = selectedCinema == null || st.getCinemaName().equals(selectedCinema);
-
-                                return dateMatch && cinemaMatch;
-                            });
-
-                    return genreMatch && hasMatchingShowtime;
-                })
-                .collect(Collectors.toList());
-
-        displayMovies(FXCollections.observableArrayList(filtered));
+    /**
+     * Adatmodellek inicializálása.
+     */
+    private void initializeData() {
+        // Dummy adatok betöltése
+        List<Movie> dummyList = MovieData.createDummyMovies();
+        this.allMovies = FXCollections.observableArrayList(dummyList);
+        this.filteredMovies = FXCollections.observableArrayList(dummyList);
     }
 
     /**
-     * Filmek listájának dinamikus megjelenítése.
+     * Szűrők (ComboBoxok) feltöltése.
      */
-    private void displayMovies(ObservableList<Movie> movies) {
-        movieListContainer.getChildren().clear(); // Előző elemek törlése
-        movieListContainer.setStyle("-fx-background-color: white;"); // A VBox háttere
+    private void populateFilters() {
+        // Műfajok feltöltése
+        List<String> genres = allMovies.stream()
+                .map(Movie::getGenre)
+                .distinct()
+                .sorted()
+                .collect(Collectors.toList());
+
+        ObservableList<String> genreItems = FXCollections.observableArrayList("Minden műfaj");
+        genreItems.addAll(genres);
+        genreFilter.setItems(genreItems);
+        genreFilter.getSelectionModel().selectFirst();
+
+        // Mozi/Város feltöltése (a vetítési időpontokból)
+        List<String> cinemas = allMovies.stream()
+                .flatMap(movie -> movie.getShowtimes().stream())
+                .map(Showtime::getCinemaName)
+                .distinct()
+                .sorted()
+                .collect(Collectors.toList());
+
+        ObservableList<String> cinemaItems = FXCollections.observableArrayList("Összes mozi");
+        cinemaItems.addAll(cinemas);
+        cinemaFilter.setItems(cinemaItems);
+        cinemaFilter.getSelectionModel().selectFirst();
+
+        // Dátum alapértelmezettre állítása (mai nap)
+        datePicker.setValue(LocalDate.now());
+    }
+
+    /**
+     * A filmlista tartalmának megjelenítése a VBox-ban.
+     */
+    private void displayMovies(List<Movie> movies) {
+        movieListContainer.getChildren().clear();
 
         if (movies.isEmpty()) {
-            Label noResults = new Label("Nincsenek a feltételeknek megfelelő filmek.");
-            noResults.setStyle("-fx-font-size: 18px; -fx-text-fill: #555; -fx-padding: 20px;");
+            Label noResults = new Label("Nincs a szűrőfeltételeknek megfelelő vetítés.");
+            noResults.setStyle("-fx-font-size: 18px; -fx-text-fill: #666666; -fx-padding: 30 0 0 0;");
             movieListContainer.getChildren().add(noResults);
             return;
         }
 
         for (Movie movie : movies) {
-            HBox movieRow = createMovieRow(movie);
-            movieListContainer.getChildren().add(movieRow);
+            movieListContainer.getChildren().add(createMovieCard(movie));
         }
     }
 
     /**
-     * Létrehozza egy film sorát a listában, esztétikus stílussal.
+     * Létrehoz egy modern, kártya alapú megjelenítést egy filmhez (HBox).
      */
-    private HBox createMovieRow(Movie movie) {
-        HBox row = new HBox(20); // HBox a sor elrendezéséhez, 20px távolság
-        row.setStyle("-fx-background-color: white; -fx-border-color: #e0e0e0; -fx-border-width: 0 0 1 0; -fx-padding: 15; -fx-alignment: center-left;");
+    private HBox createMovieCard(Movie movie) {
+        // --- 1. ALAP KÁRTYA ELRENDEZÉS ---
+        HBox card = new HBox(20);
+        card.setStyle("-fx-background-color: white; -fx-padding: 15; -fx-border-radius: 8; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0.0, 0, 2);");
+        card.setPrefHeight(200);
+        card.setMaxWidth(Double.MAX_VALUE); // Teljes szélesség kitöltése
 
-        // Poszter kép
-        ImageView poster = new ImageView();
+        // --- 2. POSZTER (Bal oldal) ---
+        ImageView posterView = new ImageView();
+        posterView.setFitWidth(100);
+        posterView.setFitHeight(150);
+        posterView.setStyle("-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0.0, 1, 1);");
         try {
-            poster.setImage(new Image(movie.getPosterUrl(), true));
+            // Betöltjük a képet. Ha hiba van, a fallback kép töltődik be.
+            posterView.setImage(new Image(movie.getPosterUrl(), true));
         } catch (Exception e) {
-            // Hiba esetén placeholder kép
-            poster.setImage(new Image("https://placehold.co/100x150/ff6600/ffffff?text=NINCS+KÉP"));
+            // Placeholder kép URL
+            posterView.setImage(new Image("https://placehold.co/100x150/999999/ffffff?text=FILM+KÉP"));
         }
-        poster.setFitWidth(100);
-        poster.setFitHeight(150);
-        poster.setStyle("-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0.0, 1, 1);");
 
-
-        // Film adatok
+        // --- 3. INFORMÁCIÓK (Középső VBox) ---
         VBox infoBox = new VBox(5);
+        infoBox.setPrefWidth(600);
+        // JAVÍTVA: A statikus metódust a HBox osztályon kell hívni!
+        HBox.setHgrow(infoBox, Priority.ALWAYS);
+
+        // Cím
         Label titleLabel = new Label(movie.getTitle());
         titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;");
 
-        Label detailsLabel = new Label(String.format(
-                "Játékidő: %d perc | Korhatár: %d+ | Műfaj: %s",
-                movie.getDurationMinutes(),
-                movie.getAgeRating(),
-                movie.getGenre()
-        ));
-        detailsLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #666;");
+        // Műfaj, Korhatár, Játékidő HBox
+        HBox metaBox = new HBox(15);
+        metaBox.setStyle("-fx-opacity: 0.8;");
+        metaBox.getChildren().addAll(
+                createTagLabel("Műfaj: " + movie.getGenre(), "#cccccc", "#333333"),
+                createTagLabel("Korhatár: " + movie.getAgeRating() + "+", "#ff6600", "white"), // Narancssárga korhatár kiemelés
+                new Label("Játékidő: " + movie.getDurationMinutes() + " perc")
+        );
 
-        // Leírás (rövid kivonat)
-        Label descriptionPreview = new Label(movie.getDescription().substring(0, Math.min(movie.getDescription().length(), 150)) + "...");
-        descriptionPreview.setStyle("-fx-font-size: 13px; -fx-text-fill: #333;");
-        descriptionPreview.setWrapText(true);
-        descriptionPreview.setMaxWidth(600);
+        // Leírás (rövidített)
+        Label descriptionLabel = new Label(movie.getDescription().substring(0, Math.min(movie.getDescription().length(), 150)) + "...");
+        descriptionLabel.setWrapText(true);
+        descriptionLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #666666;");
 
+        // Vetítési időpontok (dinamikus)
+        HBox showtimesBox = new HBox(8);
+        showtimesBox.setStyle("-fx-padding: 5 0 0 0;");
+        Label showtimesTitle = new Label("Vetítések ma:");
+        showtimesTitle.setStyle("-fx-font-weight: bold; -fx-text-fill: #1a1a1a;");
+        showtimesBox.getChildren().add(showtimesTitle);
 
-        Button selectButton = new Button("Részletek és időpontok");
-        selectButton.setOnAction(e -> goToMovieDetails(movie));
-        selectButton.setStyle("-fx-background-color: #ff6600; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 20; -fx-background-radius: 5; -fx-cursor: hand;");
+        // Csak a mai napon érvényes vetítések megjelenítése
+        movie.getShowtimes().stream()
+                .filter(st -> st.getTime().toLocalDate().isEqual(LocalDate.now()))
+                .sorted((st1, st2) -> st1.getTime().compareTo(st2.getTime()))
+                .limit(5) // Max 5 időpont a listában
+                .forEach(showtime -> {
+                    Label timeLabel = new Label(showtime.getTime().toLocalTime().format(TIME_FORMATTER));
+                    timeLabel.setStyle("-fx-background-color: #e0e0e0; -fx-padding: 2 8; -fx-background-radius: 3; -fx-font-size: 12px;");
+                    showtimesBox.getChildren().add(timeLabel);
+                });
 
-        infoBox.getChildren().addAll(titleLabel, detailsLabel, descriptionPreview, selectButton);
+        infoBox.getChildren().addAll(titleLabel, metaBox, descriptionLabel, showtimesBox);
 
-        row.getChildren().addAll(poster, infoBox);
+        // --- 4. AKCIÓ GOMB (Jobb oldal) ---
+        VBox actionBox = new VBox();
+        actionBox.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
+        actionBox.setSpacing(10);
+        // JAVÍTVA: A statikus metódust a HBox osztályon kell hívni!
+        HBox.setHgrow(actionBox, Priority.NEVER);
 
-        return row;
+        Button detailsButton = new Button("Részletek & Foglalás");
+        detailsButton.setStyle("-fx-background-color: #ff6600; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 20; -fx-background-radius: 5; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0.0, 0, 1);");
+        detailsButton.setOnAction(e -> goToMovieDetails(movie));
+
+        actionBox.getChildren().add(detailsButton);
+
+        // --- 5. ÖSSZEFOGLALÁS ---
+        card.getChildren().addAll(posterView, infoBox, actionBox);
+        return card;
+    }
+
+    /**
+     * Segédmetódus a címkék szebb megjelenítéséhez.
+     */
+    private Label createTagLabel(String text, String bgColor, String textColor) {
+        Label label = new Label(text);
+        label.setStyle("-fx-background-color: " + bgColor + "; -fx-text-fill: " + textColor + "; -fx-padding: 2 8; -fx-background-radius: 3; -fx-font-size: 12px; -fx-font-weight: bold;");
+        return label;
+    }
+
+    @FXML
+    public void filterMovies() {
+        LocalDate selectedDate = datePicker.getValue();
+        String selectedGenre = genreFilter.getSelectionModel().getSelectedItem();
+        String selectedCinema = cinemaFilter.getSelectionModel().getSelectedItem();
+
+        // Szűrés a teljes listán
+        List<Movie> results = allMovies.stream()
+                .filter(movie -> {
+                    // Szűrés műfaj szerint
+                    boolean genreMatch = selectedGenre == null || selectedGenre.equals("Minden műfaj") || movie.getGenre().equals(selectedGenre);
+
+                    // Szűrés Dátum és Mozi szerint (Vetítések alapján)
+                    List<Showtime> relevantShowtimes = movie.getShowtimes().stream()
+                            .filter(showtime -> {
+                                boolean dateMatch = selectedDate == null || showtime.getTime().toLocalDate().isEqual(selectedDate);
+                                boolean cinemaMatch = selectedCinema == null || selectedCinema.equals("Összes mozi") || showtime.getCinemaName().equals(selectedCinema);
+                                return dateMatch && cinemaMatch;
+                            })
+                            .collect(Collectors.toList());
+
+                    // Csak azokat a filmeket tartjuk meg, amelyeknek van releváns vetítése ÉS a műfaj is illeszkedik
+                    return genreMatch && !relevantShowtimes.isEmpty();
+                })
+                .collect(Collectors.toList());
+
+        filteredMovies.setAll(results);
+        displayMovies(filteredMovies);
     }
 
     /**
@@ -203,6 +268,7 @@ public class MovieListController implements BaseController {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/Main.fxml"));
             Pane root = loader.load();
 
+            // Mivel a MainController nem implementálja a BaseController-t, csak közvetlenül állítjuk be a stage-et.
             MainController controller = loader.getController();
             controller.setStage(stage);
 
