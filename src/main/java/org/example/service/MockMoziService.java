@@ -35,34 +35,64 @@ public class MockMoziService implements MoziService {
     }
 
     private void loadTestData() {
+        // --- FILM 1 ---
         Film film1 = new Film();
         film1.setFilmId(nextFilmId++);
-        film1.setCim("Dűne: Második rész");
+        film1.setCim("Interstellar - Csillagok között");
+        film1.setJatekido(169);
+        film1.setMufaj("Sci-fi");
+        film1.setKorhatar(12);
+        film1.setFilmLeiras("Egy csapat felfedező egy újonnan felfedezett féregjáraton utazik keresztül, hogy túllépjen az emberi űrutazás korlátain.");
+        film1.setPoszterUrl("https://image.tmdb.org/t/p/w600_and_h900_bestv2/6KiSSndIMLj1swkpPNq2lYppDVQ.jpg");
         FILMEK.add(film1);
 
+        // --- FILM 2 ---
         Film film2 = new Film();
         film2.setFilmId(nextFilmId++);
-        film2.setCim("A galaxis őrzői 3");
+        film2.setCim("A Grand Budapest Hotel");
+        film2.setJatekido(99);
+        film2.setMufaj("Vígjáték");
+        film2.setKorhatar(16);
+        film2.setFilmLeiras("Egy neves európai szálloda portásának és hű inasának kalandjai a világháborúk közötti Európában.");
+        film2.setPoszterUrl("https://image.tmdb.org/t/p/w600_and_h900_bestv2/fEHXKrdNjtf5R7YAA0ssVZLJLOa.jpg");
         FILMEK.add(film2);
 
-        for (int i = 1; i <= 5; i++) {
+        // --- FILM 3 ---
+        Film film3 = new Film();
+        film3.setFilmId(nextFilmId++);
+        film3.setCim("Mad Max: A harag útja");
+        film3.setJatekido(120);
+        film3.setMufaj("Akció");
+        film3.setKorhatar(18);
+        film3.setFilmLeiras("Egy poszt-apokaliptikus sivatagi pusztaságban Max Rockatansky egy női felkelőhöz csatlakozik.");
+        film3.setPoszterUrl("https://image.tmdb.org/t/p/w600_and_h900_bestv2/u6nSMyGp9Cc9TKMDDxxTZPGGpiV.jpg");
+        FILMEK.add(film3);
+
+        // --- ÜLŐHELYEK GENERÁLÁSA ---
+        for (int i = 1; i <= 10; i++) {
             Ulohely u = new Ulohely(1, "A", i);
             u.setUlohelyId(nextUlohelyId++);
             ULOHELYEK.add(u);
         }
-        for (int i = 1; i <= 5; i++) {
-            Ulohely u = new Ulohely(2, "B", i);
-            u.setUlohelyId(nextUlohelyId++);
-            ULOHELYEK.add(u);
+
+        // --- IDŐPONTOK GENERÁLÁSA (Mai napra) ---
+        LocalDateTime now = LocalDateTime.now();
+
+        // Interstellar vetítések
+        IDOPONTOK.add(new Idopont(now.withHour(17).withMinute(45), film1.getFilmId(), 1, 2500));
+        IDOPONTOK.add(new Idopont(now.withHour(20).withMinute(30), film1.getFilmId(), 5, 2800));
+
+        // Grand Budapest vetítések
+        IDOPONTOK.add(new Idopont(now.withHour(16).withMinute(0), film2.getFilmId(), 3, 2200));
+
+        // Mad Max vetítések
+        IDOPONTOK.add(new Idopont(now.withHour(19).withMinute(0), film3.getFilmId(), 6, 2600));
+        IDOPONTOK.add(new Idopont(now.withHour(22).withMinute(15), film3.getFilmId(), 1, 2600));
+
+        // ID-k beállítása az időpontoknak
+        for (Idopont i : IDOPONTOK) {
+            i.setIdopontId(nextIdopontId++);
         }
-
-        Idopont idopont1 = new Idopont(LocalDateTime.now().plusHours(2), 1, 1, 3000);
-        idopont1.setIdopontId(nextIdopontId++);
-        IDOPONTOK.add(idopont1);
-
-        Idopont idopont2 = new Idopont(LocalDateTime.now().plusHours(3), 2, 2, 2800);
-        idopont2.setIdopontId(nextIdopontId++);
-        IDOPONTOK.add(idopont2);
     }
 
     @Override
@@ -183,6 +213,13 @@ public class MockMoziService implements MoziService {
         ujErtekeles.setErtekelesId(nextErtekelesId++);
         ERTEKELESEK.add(ujErtekeles);
 
-        return new ErtekelesEredmeny(true, "Értékelés sikeresen rögzítve!");
+        return new ErtekelesEredmeny(true, "Értékelés rögzítve.");
+    }
+
+    @Override
+    public List<Foglalas> getFoglalasokFelhasznalonak(int felhasznaloId) {
+        return FOGLALASOK.stream()
+                .filter(foglalas -> foglalas.getFelhasznaloId() == felhasznaloId)
+                .collect(Collectors.toList());
     }
 }

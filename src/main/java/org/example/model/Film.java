@@ -13,6 +13,8 @@ public class Film
     private String mufaj;
     private List <String> szereplok;
     private String filmLeiras;
+    private String poszterUrl;
+    private int korhatar;
 
     public Film() {
 
@@ -72,5 +74,20 @@ public class Film
 
     public void setFilmLeiras(String filmLeiras) {
         this.filmLeiras = filmLeiras;
+    }
+
+    public String getPoszterUrl() {
+        return poszterUrl;
+    }
+
+    public void setPoszterUrl(String poszterUrl) {
+        this.poszterUrl = poszterUrl;
+    }
+    public int getKorhatar() {
+        return korhatar;
+    }
+
+    public void setKorhatar(int korhatar) {
+        this.korhatar = korhatar;
     }
 }

@@ -25,4 +25,6 @@ public interface MoziService {
     AuthEredmeny megprobalBejelentkezni(String felhasznalonev, String jelszo);
 
     ErtekelesEredmeny megprobalErtekelni(int filmId, int felhasznaloId, int pontszam, String szovegesErtekeles);
+
+    List<Foglalas> getFoglalasokFelhasznalonak(int felhasznaloId);
 }
