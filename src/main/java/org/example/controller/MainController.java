@@ -1,45 +1,99 @@
 package org.example.controller;
 
-import org.example.model.Film;
-import org.example.view.MainView;
-import org.example.service.MoziService;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
+import org.example.model.Felhasznalo;
+import org.example.service.AuthEredmeny;
 import org.example.service.MockMoziService;
+import org.example.service.MoziService;
 
-import javafx.collections.FXCollections;
-import java.util.List;
+import java.io.IOException;
 
 public class MainController {
 
-    private MainView view;
-    private MoziService service;
+    private Stage stage;
+    private final MoziService service = new MockMoziService();
 
-    public MainController(MainView view) {
-        this.view = view;
-        this.service = new MockMoziService();
+    // Globális statikus változó a bejelentkezett felhasználónak (egyszerű megoldás)
+    public static Felhasznalo loggedInUser = null;
 
-        loadFilmsFromService();
-        setupBindings();
+    @FXML private TextField usernameField;
+    @FXML private PasswordField passwordField;
+    @FXML private Label statusLabel;
+
+    public void setStage(Stage stage) {
+        this.stage = stage;
     }
 
-    private void loadFilmsFromService() {
-        List<Film> filmek = service.getMindenFilm();
-        view.getFilmLista().setItems(FXCollections.observableArrayList(
-                filmek.stream().map(Film::getCim).toList()
-        ));
+    @FXML
+    public void handleLogin() {
+        String user = usernameField.getText();
+        String pass = passwordField.getText();
+
+        AuthEredmeny eredmeny = service.megprobalBejelentkezni(user, pass);
+
+        if (eredmeny.isSiker()) {
+            loggedInUser = eredmeny.getFelhasznalo();
+            statusLabel.setStyle("-fx-text-fill: green;");
+            statusLabel.setText("Sikeres belépés: " + loggedInUser.getFelhasznaloNev());
+            // Itt akár automatikusan tovább is dobhatnád a listára:
+            // goToMovieList();
+        } else {
+            statusLabel.setStyle("-fx-text-fill: red;");
+            statusLabel.setText(eredmeny.getUzenet());
+        }
     }
 
-    private void setupBindings() {
-        view.getFilmLista().getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            // A frontendesek ide írják majd a logikát, ami betölti
-            // a kiválasztott film részleteit és időpontjait.
-            System.out.println("Kiválasztott film: " + newVal);
-        });
+    @FXML
+    public void handleRegister() {
+        String user = usernameField.getText();
+        String pass = passwordField.getText();
 
-        view.getFoglalasGomb().setOnAction(e -> {
-            // A frontendesek ide írják majd a logikát, ami összegyűjti
-            // a kiválasztott időpontot, széket, felhasználót és meghívja a servicet.
-            System.out.println("\n--- Foglalás Gomb Megnyomva ---");
-            // Pl: service.megprobalFoglalni(kivalasztottIdopont.getId(), kivalasztottSzek.getId(), ...);
-        });
+        AuthEredmeny eredmeny = service.megprobalRegisztralni(user, pass);
+
+        if (eredmeny.isSiker()) {
+            statusLabel.setStyle("-fx-text-fill: green;");
+            statusLabel.setText("Regisztráció sikeres! Most lépj be.");
+        } else {
+            statusLabel.setStyle("-fx-text-fill: red;");
+            statusLabel.setText(eredmeny.getUzenet());
+        }
+    }
+
+    @FXML
+    public void goToMovieList() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MovieList.fxml"));
+            Pane root = loader.load();
+
+            MovieListController controller = loader.getController();
+            controller.setStage(stage);
+
+            stage.setScene(new Scene(root));
+            stage.setTitle("Absolute Cinema - Műsoron");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void goToMyBookings() {
+        if (loggedInUser == null) {
+            statusLabel.setText("Előbb jelentkezz be!");
+            return;
+        }
+        System.out.println("Foglalásaim - " + loggedInUser.getFelhasznaloNev());
+        // Ide jön majd a foglalás lista ablak
+    }
+
+    @FXML
+    public void goToProfile() {
+        System.out.println("Profil - Még nincs kész");
     }
 }
