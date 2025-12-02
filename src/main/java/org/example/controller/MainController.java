@@ -10,7 +10,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.example.model.Felhasznalo;
 import org.example.service.AuthEredmeny;
-import org.example.service.MockMoziService;
+import org.example.service.DatabaseMoziService;
 import org.example.service.MoziService;
 
 import java.io.IOException;
@@ -18,7 +18,7 @@ import java.io.IOException;
 public class MainController {
 
     private Stage stage;
-    private final MoziService service = new MockMoziService();
+    private final MoziService service = new DatabaseMoziService();
 
     // Globális statikus változó a bejelentkezett felhasználónak (egyszerű megoldás)
     public static Felhasznalo loggedInUser = null;
@@ -85,15 +85,31 @@ public class MainController {
     @FXML
     public void goToMyBookings() {
         if (loggedInUser == null) {
-            statusLabel.setText("Előbb jelentkezz be!");
+            statusLabel.setText("Kérlek, jelentkezz be először!");
+            statusLabel.setStyle("-fx-text-fill: red;");
             return;
         }
-        System.out.println("Foglalásaim - " + loggedInUser.getFelhasznaloNev());
-        // Ide jön majd a foglalás lista ablak
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MyBookings.fxml"));
+            Pane root = loader.load();
+
+            MyBookingsController controller = loader.getController();
+            controller.setStage(stage);
+
+            // ÁTADJUK A BEJELENTKEZETT FELHASZNÁLÓT:
+            controller.initializeData(loggedInUser);
+
+            stage.setScene(new Scene(root));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
     public void goToProfile() {
         System.out.println("Profil - Még nincs kész");
     }
+
+
 }
