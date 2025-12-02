@@ -221,5 +221,8 @@ public class MockMoziService implements MoziService {
         return FOGLALASOK.stream()
                 .filter(foglalas -> foglalas.getFelhasznaloId() == felhasznaloId)
                 .collect(Collectors.toList());
+        //teszt
     }
+
+
 }
