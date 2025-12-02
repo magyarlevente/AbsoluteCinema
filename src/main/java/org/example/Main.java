@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.example.controller.MainController;
+import org.example.database.DatabaseManager;
 
 import java.io.IOException;
 import java.net.URL;
@@ -15,6 +16,10 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) {
         try {
+
+            // Létrehozza az adatbázist és a táblákat (Filmek, Felhasználók, Foglalások)
+            DatabaseManager.initializeDatabase();
+
             // 1. Megkeressük az FXML fájlt
             URL fxmlUrl = getClass().getResource("/view/Main.fxml");
 

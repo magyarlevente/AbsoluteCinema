@@ -16,7 +16,7 @@ import javafx.stage.Stage;
 
 import org.example.model.Film;
 import org.example.model.Idopont;
-import org.example.service.MockMoziService;
+import org.example.service.DatabaseMoziService;
 import org.example.service.MoziService;
 
 import java.io.IOException;
@@ -38,7 +38,7 @@ public class MovieListController implements BaseController {
     @FXML private Button backButton;
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
-    private final MoziService service = new MockMoziService();
+    private final MoziService service = new DatabaseMoziService();
 
     @Override
     public void setStage(Stage stage) {
