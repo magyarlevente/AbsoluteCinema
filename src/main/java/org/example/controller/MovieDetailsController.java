@@ -11,6 +11,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import org.example.model.Film;
+import org.example.controller.MovieBookingController;
 import org.example.model.Idopont;
 import org.example.service.MockMoziService;
 import org.example.service.MoziService;
@@ -82,8 +83,20 @@ public class MovieDetailsController implements BaseController {
 
             timeButton.setOnAction(e -> {
                 System.out.println("Foglalás kiválasztva: " + film.getCim() + " - " + idopont.getKezdesIdopont());
-                // Ide jön majd a foglalás ablakra ugrás
+                try {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MovieBooking.fxml"));
+                    Pane root = loader.load();
+
+                    MovieBookingController controller = loader.getController();
+                    controller.setStage(stage);               // Stage átadása
+                    controller.setFilmAndIdopont(film, idopont); // Film + Időpont átadása
+
+                    stage.setScene(new Scene(root));
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             });
+
 
             showtimesFlowPane.getChildren().add(timeButton);
         }

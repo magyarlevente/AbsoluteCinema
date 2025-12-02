@@ -74,6 +74,11 @@ public class MockMoziService implements MoziService {
             u.setUlohelyId(nextUlohelyId++);
             ULOHELYEK.add(u);
         }
+        for (int i = 1; i <= 10; i++) {
+            Ulohely u = new Ulohely(1, "B", i);
+            u.setUlohelyId(nextUlohelyId++);
+            ULOHELYEK.add(u);
+        }
 
         // --- IDŐPONTOK GENERÁLÁSA (Mai napra) ---
         LocalDateTime now = LocalDateTime.now();
