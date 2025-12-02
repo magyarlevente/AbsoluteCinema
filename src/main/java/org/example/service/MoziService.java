@@ -27,4 +27,9 @@ public interface MoziService {
     ErtekelesEredmeny megprobalErtekelni(int filmId, int felhasznaloId, int pontszam, String szovegesErtekeles);
 
     List<Foglalas> getFoglalasokFelhasznalonak(int felhasznaloId);
+
+
+    Film getFilmById(int id);
+    Idopont getIdopontById(int id);
+    Ulohely getUlohelyById(int id);
 }
