@@ -5,78 +5,107 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" style="-fx-background-color: #f0f0f0;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.MovieDetailsController">
-    <children>
-        <!-- FEJLÉC -->
-        <HBox alignment="CENTER_LEFT" style="-fx-background-color: #1a1a1a; -fx-padding: 15;">
+<ScrollPane fitToWidth="true" fitToHeight="true"
+            style="-fx-background-color: #000000; -fx-padding: 0;"
+            stylesheets="@../styles/dark-theme.css"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.controller.MovieDetailsController">
+    <content>
+        <VBox style="-fx-background-color: #000000; -fx-padding: 30;" spacing="20" VBox.vgrow="ALWAYS" minHeight="700.0">
             <children>
-                <Button fx:id="backButton" mnemonicParsing="false" onAction="#goBackToList" style="-fx-background-color: #ff6600; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5; -fx-cursor: hand;" text="&lt; Filmlista" />
-                <Label fx:id="titleLabel" text="Film Cím" textFill="WHITE">
-                    <font>
-                        <Font name="System Bold" size="28.0" />
-                    </font>
-                    <HBox.margin>
-                        <Insets left="20.0" />
-                    </HBox.margin>
-                </Label>
-            </children>
-        </HBox>
-        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background-color: #f0f0f0;">
-            <content>
-                <HBox alignment="TOP_LEFT" spacing="30.0" style="-fx-background-color: white; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0.0, 0, 0);">
-                    <children>
-                        <!-- BAL OLDAL: POSZTER ÉS ALAP ADATOK -->
-                        <VBox alignment="TOP_CENTER" spacing="10.0" minWidth="200.0" maxWidth="200.0">
-                            <children>
-                                <ImageView fx:id="posterView" fitHeight="300.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" style="-fx-border-color: #cccccc; -fx-border-width: 1; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0.0, 2, 2);" />
-                                <Label fx:id="durationLabel" text="Játékidő: X perc" style="-fx-font-weight: bold;" />
-                                <!-- KIEMELÉS: Korhatár címke narancssárga háttérrel -->
-                                <Label fx:id="ageRatingLabel" text="Korhatár: X+"
-                                       style="-fx-background-color: #ff6600; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 5 10; -fx-background-radius: 5; -fx-font-size: 14px;" />
-                            </children>
-                        </VBox>
-                        <!-- JOBB OLDAL: LEÍRÁS ÉS IDŐPONTOK -->
-                        <VBox spacing="20.0" HBox.hgrow="ALWAYS">
-                            <children>
-                                <!-- Leírás -->
-                                <VBox spacing="5.0">
-                                    <children>
-                                        <Label text="Összefoglaló" textFill="#1a1a1a">
-                                            <font>
-                                                <Font name="System Bold" size="22.0" />
-                                            </font>
-                                        </Label>
-                                        <Label fx:id="descriptionLabel" alignment="TOP_LEFT" style="-fx-font-size: 14px; -fx-text-fill: #333333;" text="Film leírás..." wrapText="true" />
-                                    </children>
-                                </VBox>
-                                <!-- Vetítési Időpontok -->
-                                <VBox spacing="10.0">
-                                    <children>
-                                        <Label text="Vetítési Időpontok" textFill="#ff6600">
-                                            <font>
-                                                <Font name="System Bold" size="22.0" />
-                                            </font>
-                                        </Label>
-                                        <!-- A FlowPane továbbra is a vetítési időpontok konténere, a Controller ebbe fogja a dátum szerinti csoportokat generálni -->
-                                        <FlowPane fx:id="showtimesFlowPane" hgap="10.0" vgap="10.0" style="-fx-padding: 10; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-border-radius: 5;">
-                                            <!-- Itt jelennek meg dinamikusan a DÁTUM FEJLÉCEK és az időpont gombok -->
-                                        </FlowPane>
-                                        <Label text="Kattints az időpontra a helyfoglaláshoz. (Adatátadás: film ID + időpont ID)" textFill="#666666" style="-fx-font-style: italic;" />
-                                    </children>
-                                </VBox>
-                            </children>
-                        </VBox>
-                    </children>
-                    <VBox.margin>
-                        <Insets />
-                    </VBox.margin>
+
+                <HBox alignment="CENTER_LEFT" spacing="20">
+                    <Button fx:id="backButton" text="← Vissza" onAction="#goBackToList"
+                            style="-fx-background-color: transparent; -fx-text-fill: #999999; -fx-border-color: #999999; -fx-border-radius: 3; -fx-cursor: hand;"/>
+                    <Label text="TOVÁBBI INFORMÁCIÓ:" textFill="#cccccc">
+                        <font><Font size="20.0" /></font>
+                    </Label>
+                    <Label fx:id="titleLabel" text="FILM CÍME" textFill="WHITE">
+                        <font><Font name="System Bold" size="20.0" /></font>
+                    </Label>
                 </HBox>
-            </content>
-        </ScrollPane>
-    </children>
-</VBox>
+
+                <HBox spacing="50" alignment="CENTER_LEFT" style="-fx-padding: 10 0 20 0;">
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="📅" textFill="WHITE" style="-fx-font-size: 24px;"/>
+                        <VBox>
+                            <Label text="BEMUTATÓ IDEJE:" textFill="#cccccc">
+                                <font><Font name="System Bold" size="12.0" /></font>
+                            </Label>
+                            <Label fx:id="dateLabel" text="2025. december 04." textFill="WHITE">
+                                <font><Font name="System Bold" size="16.0" /></font>
+                            </Label>
+                        </VBox>
+                    </HBox>
+
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="🕒" textFill="WHITE" style="-fx-font-size: 24px;"/>
+                        <VBox>
+                            <Label text="JÁTÉKIDŐ:" textFill="#cccccc">
+                                <font><Font name="System Bold" size="12.0" /></font>
+                            </Label>
+                            <Label fx:id="durationLabel" text="104 perc" textFill="WHITE">
+                                <font><Font name="System Bold" size="16.0" /></font>
+                            </Label>
+                        </VBox>
+                    </HBox>
+                </HBox>
+
+                <HBox spacing="40" alignment="TOP_LEFT" VBox.vgrow="ALWAYS">
+
+                    <VBox spacing="30" HBox.hgrow="ALWAYS">
+
+                        <Label fx:id="descriptionLabel" text="Film leírása..." textFill="#dddddd" wrapText="true" style="-fx-font-size: 14px; -fx-line-spacing: 5;"/>
+
+                        <GridPane hgap="20" vgap="15">
+                            <columnConstraints>
+                                <ColumnConstraints minWidth="120" prefWidth="150" />
+                                <ColumnConstraints hgrow="ALWAYS" />
+                            </columnConstraints>
+
+                            <Label text="Eredeti cím:" textFill="#999999" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                            <Label fx:id="originalTitleLabel" text="-" textFill="WHITE" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                            <Label text="Filmműfaj:" textFill="#999999" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                            <Label fx:id="genreLabel" text="-" textFill="WHITE" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                            <Label text="Szereplők:" textFill="#999999" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                            <Label text="-" textFill="WHITE" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                            <Label text="Rendező:" textFill="#999999" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                            <Label text="-" textFill="WHITE" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+                            <Label text="Korhatár:" textFill="#999999" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                            <Label fx:id="ageRatingLabel" text="16" textFill="WHITE" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                        </GridPane>
+
+                        <VBox spacing="10" style="-fx-padding: 20 0 0 0; -fx-border-color: #333333; -fx-border-width: 1 0 0 0;" VBox.vgrow="ALWAYS">
+                            <Label text="VETÍTÉSI IDŐPONTOK (A kiválasztott szűrés szerint):" textFill="#ff6600">
+                                <font><Font name="System Bold" size="18.0" /></font>
+                            </Label>
+
+                            <FlowPane fx:id="showtimesFlowPane" hgap="15.0" vgap="15.0" />
+
+                            <Label text="Kattints az időpontra a foglaláshoz." textFill="#666666" style="-fx-font-style: italic;"/>
+                        </VBox>
+
+                    </VBox>
+
+                    <VBox minWidth="300" maxWidth="350" alignment="TOP_RIGHT">
+                        <ImageView fx:id="posterView" fitWidth="350" preserveRatio="true"
+                                   style="-fx-effect: dropshadow(gaussian, rgba(255,255,255,0.1), 20, 0, 0, 0);"/>
+                    </VBox>
+
+                </HBox>
+            </children>
+        </VBox>
+    </content>
+</ScrollPane>

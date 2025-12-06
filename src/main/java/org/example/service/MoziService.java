@@ -5,6 +5,7 @@ import org.example.model.Idopont;
 import org.example.model.Ulohely;
 import org.example.model.Foglalas;
 import org.example.model.Felhasznalo;
+import org.example.model.Terem;
 
 import java.util.List;
 
@@ -27,6 +28,10 @@ public interface MoziService {
     ErtekelesEredmeny megprobalErtekelni(int filmId, int felhasznaloId, int pontszam, String szovegesErtekeles);
 
     List<Foglalas> getFoglalasokFelhasznalonak(int felhasznaloId);
+
+    boolean torolFoglalas(int foglalasId);
+
+    Terem getTeremById(int id);
 
 
     Film getFilmById(int id);

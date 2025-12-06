@@ -1,0 +1,46 @@
+/* Alap sötét téma a vezérlőknek */
+.root {
+    -fx-base: #1a1a1a; /* A fő sötét szín */
+    -fx-background: #000000; /* Háttér szín */
+    -fx-control-inner-background: #222222; /* Beviteli mezők háttere */
+    -fx-text-base_color: white; /* Szöveg színe */
+    -fx-prompt-text-fill: #999999;
+}
+
+/* DatePicker és ComboBox specifikus stílusok */
+.date-picker .text-field,
+.combo-box .list-cell,
+.combo-box-popup .list-view {
+    -fx-background-color: #222222;
+    -fx-text-fill: white;
+}
+
+.date-picker .button,
+.combo-box .arrow-button {
+    -fx-background-color: #333333;
+}
+
+.combo-box-popup .list-view .list-cell:filled:selected,
+.combo-box-popup .list-view .list-cell:filled:hover {
+    -fx-background-color: #ff6600; /* Narancs kiemelés */
+    -fx-text-fill: white;
+}
+.scroll-pane,
+.scroll-pane > .viewport {
+    -fx-background-color: #000000; /* Fekete háttér mindenhol */
+    -fx-background: #000000;
+}
+
+/* Görgetősáv stílus (opcionális, hogy szebb legyen) */
+.scroll-bar:vertical .track,
+.scroll-bar:horizontal .track {
+    -fx-background-color: #1a1a1a;
+    -fx-border-color: transparent;
+    -fx-background-radius: 0;
+}
+
+.scroll-bar:vertical .thumb,
+.scroll-bar:horizontal .thumb {
+    -fx-background-color: #444444;
+    -fx-background-radius: 5;
+}

@@ -4,9 +4,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.example.model.*;
@@ -22,6 +25,7 @@ public class MyBookingsController implements BaseController {
     private Stage stage;
     private final MoziService service = new DatabaseMoziService();
     private static final DateTimeFormatter DF = DateTimeFormatter.ofPattern("yyyy. MM. dd. HH:mm");
+    private Felhasznalo currentUser;
 
     @FXML private VBox bookingsContainer;
 
@@ -31,9 +35,9 @@ public class MyBookingsController implements BaseController {
     }
 
     public void initializeData(Felhasznalo user) {
+        this.currentUser = user;
         bookingsContainer.getChildren().clear();
 
-        // 1. Foglalások lekérése
         List<Foglalas> foglalasok = service.getFoglalasokFelhasznalonak(user.getFelhasznaloId());
 
         if (foglalasok.isEmpty()) {
@@ -41,18 +45,16 @@ public class MyBookingsController implements BaseController {
             return;
         }
 
-        // 2. Kártyák létrehozása minden foglaláshoz
         for (Foglalas f : foglalasok) {
             HBox card = new HBox(15);
             card.setStyle("-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 5; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 1);");
             card.setPadding(new Insets(10));
+            card.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
 
-            // Adatok kikeresése ID alapján
             Idopont idopont = service.getIdopontById(f.getIdopontId());
             Film film = (idopont != null) ? service.getFilmById(idopont.getFilmId()) : null;
             Ulohely ulohely = service.getUlohelyById(f.getUlohelyId());
 
-            // Szövegek összeállítása
             String filmCim = (film != null) ? film.getCim() : "Ismeretlen film";
             String datum = (idopont != null) ? idopont.getKezdesIdopont().format(DF) : "-";
             String szekInfo = (ulohely != null) ? (ulohely.getSorJele() + " sor, " + ulohely.getUlohelySzam() + ". szék") : "-";
@@ -65,9 +67,25 @@ public class MyBookingsController implements BaseController {
             Label lblSzek = new Label("Hely: " + szekInfo);
 
             details.getChildren().addAll(lblCim, lblDatum, lblSzek);
-            card.getChildren().add(details);
 
+            Region spacer = new Region();
+            HBox.setHgrow(spacer, Priority.ALWAYS);
+
+            Button deleteBtn = new Button("Törlés");
+            deleteBtn.setStyle("-fx-background-color: #cc0000; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;");
+            deleteBtn.setOnAction(e -> handleDelete(f));
+
+            card.getChildren().addAll(details, spacer, deleteBtn);
             bookingsContainer.getChildren().add(card);
+        }
+    }
+
+    private void handleDelete(Foglalas f) {
+        boolean siker = service.torolFoglalas(f.getFoglalasId());
+        if (siker) {
+            initializeData(currentUser);
+        } else {
+            System.out.println("Hiba a törléskor");
         }
     }
 

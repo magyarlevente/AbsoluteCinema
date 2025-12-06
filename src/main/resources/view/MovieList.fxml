@@ -10,49 +10,53 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" style="-fx-background-color: #f7f7f7;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.MovieListController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0"
+      style="-fx-background-color: #000000;" stylesheets="@../styles/dark-theme.css"
+      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.MovieListController">
     <children>
-        <!-- FEJLÉC ÉS SZŰRŐK -->
-        <VBox style="-fx-background-color: #1a1a1a; -fx-padding: 15;">
+
+        <VBox style="-fx-background-color: #1a1a1a; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 10, 0, 0, 5);">
             <children>
-                <!-- Fejléc (Filmek Műsoron) -->
                 <HBox alignment="CENTER_LEFT" spacing="20.0">
                     <children>
-                        <Button fx:id="backButton" mnemonicParsing="false" onAction="#goBackToMain" style="-fx-background-color: #ff6600; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5; -fx-cursor: hand;" text="&lt; Főmenü" />
-                        <Label text="Filmek Műsoron" textFill="WHITE">
+                        <Button fx:id="backButton" mnemonicParsing="false" onAction="#goBackToMain" text="← Vissza"
+                                style="-fx-background-color: transparent; -fx-text-fill: #999999; -fx-border-color: #999999; -fx-border-radius: 3; -fx-cursor: hand;" />
+                        <Label text="MAI KÍNÁLAT &amp; SZŰRÉS" textFill="WHITE">
                             <font>
-                                <Font name="System Bold" size="28.0" />
+                                <Font name="System Bold" size="24.0" />
                             </font>
                         </Label>
                     </children>
-                </HBox>
-                <!-- SZŰRŐ MEZŐK -->
-                <HBox alignment="CENTER_LEFT" spacing="10.0" VBox.vgrow="NEVER">
-                    <children>
-                        <Label text="Dátum:" textFill="WHITE" />
-                        <DatePicker fx:id="datePicker" promptText="Válassz dátumot" style="-fx-background-radius: 5; -fx-padding: 5;" />
-                        <Label text="Mozi:" textFill="WHITE" />
-                        <ComboBox fx:id="cinemaFilter" prefWidth="150.0" promptText="Mozi / Város" style="-fx-background-radius: 5;" />
-                        <Label text="Műfaj:" textFill="WHITE" />
-                        <ComboBox fx:id="genreFilter" prefWidth="150.0" promptText="Műfaj szűrés" style="-fx-background-radius: 5;" />
-                        <Button mnemonicParsing="false" onAction="#filterMovies" style="-fx-background-color: #0099cc; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0.0, 0, 1);" text="Szűrés" />
-                    </children>
                     <VBox.margin>
-                        <Insets top="15.0" />
+                        <Insets bottom="20.0" />
                     </VBox.margin>
+                </HBox>
+
+                <HBox alignment="CENTER_LEFT" spacing="15.0">
+                    <children>
+                        <VBox spacing="5">
+                            <Label text="Dátum:" textFill="#cccccc"/>
+                            <DatePicker fx:id="datePicker" onAction="#filterMovies" prefWidth="150.0" promptText="Válassz dátumot" />
+                        </VBox>
+                        <VBox spacing="5">
+                            <Label text="Mozi:" textFill="#cccccc"/>
+                            <ComboBox fx:id="cinemaFilter" onAction="#filterMovies" prefWidth="180.0" promptText="Mozi választás" />
+                        </VBox>
+                        <VBox spacing="5" HBox.hgrow="ALWAYS">
+                            <Label text="Műfaj:" textFill="#cccccc"/>
+                            <ComboBox fx:id="genreFilter" onAction="#filterMovies" prefWidth="180.0" promptText="Műfaj választás" maxWidth="Infinity" />
+                        </VBox>
+                    </children>
                 </HBox>
             </children>
         </VBox>
 
-        <!-- FILMLISTA KONTÉNER -->
-        <!-- A hiba valószínűleg a ScrollPane stílusában volt: a háttérszín most a ScrollPane-en belül van beállítva. -->
-        <ScrollPane fx:id="movieScrollPane" fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background-color: #f7f7f7;">
+        <ScrollPane fx:id="movieScrollPane" fitToWidth="true" hbarPolicy="NEVER" VBox.vgrow="ALWAYS" style="-fx-background: #000000; -fx-background-color: transparent;">
             <content>
-                <!-- A movie list container spacinget megnöveljük és kicsit befelé húzzuk -->
-                <VBox fx:id="movieListContainer" prefWidth="1.0" spacing="20.0" style="-fx-background-color: #f7f7f7; -fx-padding: 20;">
-                    <!-- Filmlistát a Controller dinamikusan tölti be -->
+                <VBox fx:id="movieListContainer" spacing="20.0" style="-fx-background-color: #000000; -fx-padding: 20;">
                 </VBox>
             </content>
         </ScrollPane>
+
     </children>
 </VBox>

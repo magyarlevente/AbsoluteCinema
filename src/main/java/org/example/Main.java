@@ -20,7 +20,6 @@ public class Main extends Application {
             // Létrehozza az adatbázist és a táblákat (Filmek, Felhasználók, Foglalások)
             DatabaseManager.initializeDatabase();
 
-            // 1. Megkeressük az FXML fájlt
             URL fxmlUrl = getClass().getResource("/view/Main.fxml");
 
             if (fxmlUrl == null) {
@@ -28,15 +27,12 @@ public class Main extends Application {
                 return;
             }
 
-            // 2. Betöltjük az ablakot
             FXMLLoader loader = new FXMLLoader(fxmlUrl);
             Pane root = loader.load();
 
-            // 3. Beállítjuk a Controllert
             MainController controller = loader.getController();
             controller.setStage(stage);
 
-            // 4. Megjelenítjük
             Scene scene = new Scene(root);
             stage.setTitle("Absolute Cinema");
             stage.setScene(scene);

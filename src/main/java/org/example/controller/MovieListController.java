@@ -4,18 +4,19 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import org.example.model.Film;
 import org.example.model.Idopont;
+import org.example.model.Terem;
 import org.example.service.DatabaseMoziService;
 import org.example.service.MoziService;
 
@@ -54,7 +55,6 @@ public class MovieListController implements BaseController {
     }
 
     private void populateFilters() {
-        // Műfajok
         List<String> genres = allMovies.stream()
                 .map(Film::getMufaj)
                 .distinct()
@@ -65,7 +65,6 @@ public class MovieListController implements BaseController {
         genreFilter.setItems(genreItems);
         genreFilter.getSelectionModel().selectFirst();
 
-        // Mozik (Ideiglenes, mivel nincs Mozi modell)
         ObservableList<String> cinemaItems = FXCollections.observableArrayList("Minden mozi", "Cinema City Debrecen", "Apolló Mozi");
         cinemaFilter.setItems(cinemaItems);
         cinemaFilter.getSelectionModel().selectFirst();
@@ -76,27 +75,30 @@ public class MovieListController implements BaseController {
     @FXML
     public void filterMovies() {
         String selectedGenre = genreFilter.getValue();
-        String selectedCinema = cinemaFilter.getValue(); // Ezt egyelőre nem használjuk a logikában, mert nincs mozi ID
+        String selectedCinema = cinemaFilter.getValue();
         LocalDate selectedDate = datePicker.getValue();
 
         List<Film> filteredList = allMovies.stream()
                 .filter(film -> {
-                    // 1. Műfaj szűrés
                     if (selectedGenre != null && !"Minden műfaj".equals(selectedGenre)) {
-                        if (!film.getMufaj().equalsIgnoreCase(selectedGenre)) {
+                        if (!film.getMufaj().toLowerCase().contains(selectedGenre.toLowerCase())) {
                             return false;
                         }
                     }
-                    // 2. Dátum szűrés (Van-e vetítés aznap?)
-                    if (selectedDate != null) {
-                        List<Idopont> idopontok = service.getIdopontokFilmhez(film.getFilmId());
-                        boolean vanVetitesAznap = idopontok.stream()
-                                .anyMatch(i -> i.getKezdesIdopont().toLocalDate().equals(selectedDate));
-                        if (!vanVetitesAznap) {
-                            return false;
+
+                    List<Idopont> idopontok = service.getIdopontokFilmhez(film.getFilmId());
+                    return idopontok.stream().anyMatch(idopont -> {
+                        boolean datumOk = (selectedDate == null) || idopont.getKezdesIdopont().toLocalDate().equals(selectedDate);
+                        boolean moziOk = true;
+                        if (selectedCinema != null && !"Minden mozi".equals(selectedCinema)) {
+                            Terem terem = service.getTeremById(idopont.getTeremId());
+                            if (terem != null) {
+                                if (selectedCinema.contains("Cinema City") && !terem.getTeremNev().startsWith("CC")) moziOk = false;
+                                else if (selectedCinema.contains("Apolló") && !terem.getTeremNev().startsWith("Apollo")) moziOk = false;
+                            }
                         }
-                    }
-                    return true;
+                        return datumOk && moziOk;
+                    });
                 })
                 .collect(Collectors.toList());
 
@@ -108,7 +110,7 @@ public class MovieListController implements BaseController {
 
         if (movies.isEmpty()) {
             Label placeholder = new Label("Nincs találat a megadott feltételekkel.");
-            placeholder.setStyle("-fx-font-size: 16px; -fx-padding: 20;");
+            placeholder.setStyle("-fx-font-size: 18px; -fx-padding: 30; -fx-text-fill: #999999;");
             movieListContainer.getChildren().add(placeholder);
             return;
         }
@@ -119,58 +121,76 @@ public class MovieListController implements BaseController {
     }
 
     private HBox createMovieCard(Film film) {
-        HBox card = new HBox(20);
-        card.setStyle("-fx-background-color: white; -fx-padding: 15; -fx-border-radius: 8; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0.0, 0, 2);");
+        HBox card = new HBox(25);
 
-        // POSZTER
+        card.setStyle("-fx-background-color: #222222; -fx-padding: 20; -fx-border-radius: 10; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 15, 0.0, 0, 5);");
+
         ImageView posterView = new ImageView();
-        posterView.setFitWidth(100);
-        posterView.setFitHeight(150);
+        posterView.setFitWidth(160);
+        posterView.setFitHeight(240);
+        posterView.setPreserveRatio(true);
+        posterView.setStyle("-fx-effect: dropshadow(gaussian, rgba(255,255,255,0.05), 10, 0, 0, 0);");
+
         try {
             String url = film.getPoszterUrl();
             if(url != null && !url.isEmpty()) {
                 posterView.setImage(new Image(url, true));
             }
-        } catch (Exception e) {
-            // Ha hiba van a képpel, nem teszünk semmit (üres marad)
-        }
+        } catch (Exception e) {}
 
-        // INFO
-        VBox infoBox = new VBox(5);
+        VBox infoBox = new VBox(10);
         HBox.setHgrow(infoBox, Priority.ALWAYS);
+        infoBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
 
         Label titleLabel = new Label(film.getCim());
-        titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #333333;");
+        titleLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;");
+        titleLabel.setWrapText(true);
 
-        Label metaLabel = new Label(film.getMufaj() + " | " + film.getJatekido() + " perc | " + film.getKorhatar() + "+");
-        metaLabel.setStyle("-fx-text-fill: #666666;");
 
-        // IDŐPONTOK
+        Label metaLabel = new Label("Műfaj: " + film.getMufaj() + " | Játékidő: " + film.getJatekido() + " perc | Korhatár: " + film.getKorhatar() + "+");
+        metaLabel.setStyle("-fx-text-fill: #aaaaaa; -fx-font-size: 14px;");
+
+        Label descLabel = new Label(film.getFilmLeiras());
+        descLabel.setStyle("-fx-text-fill: #cccccc; -fx-font-size: 13px;");
+        descLabel.setWrapText(true);
+        descLabel.setMaxHeight(60);
+
         HBox showtimesBox = new HBox(10);
         List<Idopont> idopontok = service.getIdopontokFilmhez(film.getFilmId());
-
-        // Csak azokat az időpontokat mutatjuk, amik a kiválasztott napra esnek (vagy maira, ha nincs kiválasztva)
         LocalDate filterDate = datePicker.getValue() != null ? datePicker.getValue() : LocalDate.now();
+        String filterCinema = cinemaFilter.getValue();
 
         for (Idopont idopont : idopontok) {
             if (idopont.getKezdesIdopont().toLocalDate().equals(filterDate)) {
-                Label timeLabel = new Label(idopont.getKezdesIdopont().format(TIME_FORMATTER));
-                timeLabel.setStyle("-fx-background-color: #e0e0e0; -fx-padding: 4 8; -fx-background-radius: 4; -fx-text-fill: #333;");
-                showtimesBox.getChildren().add(timeLabel);
+                boolean show = true;
+                if (filterCinema != null && !"Minden mozi".equals(filterCinema)) {
+                    Terem t = service.getTeremById(idopont.getTeremId());
+                    if (t != null) {
+                        if (filterCinema.contains("Cinema City") && !t.getTeremNev().startsWith("CC")) show = false;
+                        else if (filterCinema.contains("Apolló") && !t.getTeremNev().startsWith("Apollo")) show = false;
+                    }
+                }
+
+                if (show) {
+                    Label timeLabel = new Label(idopont.getKezdesIdopont().format(TIME_FORMATTER));
+                    timeLabel.setStyle("-fx-background-color: #333333; -fx-padding: 5 10; -fx-background-radius: 5; -fx-text-fill: #ffcc00; -fx-font-weight: bold;");
+                    showtimesBox.getChildren().add(timeLabel);
+                }
             }
         }
 
         if(showtimesBox.getChildren().isEmpty()) {
-            Label noShowLabel = new Label("Nincs vetítés ezen a napon");
-            noShowLabel.setStyle("-fx-text-fill: #999; -fx-font-style: italic;");
+            Label noShowLabel = new Label("Nincs vetítés a kiválasztott feltételekkel");
+            noShowLabel.setStyle("-fx-text-fill: #888888; -fx-font-style: italic;");
             showtimesBox.getChildren().add(noShowLabel);
         }
 
-        infoBox.getChildren().addAll(titleLabel, metaLabel, showtimesBox);
+        infoBox.getChildren().addAll(titleLabel, metaLabel, descLabel, showtimesBox);
 
-        // GOMB
-        Button detailsButton = new Button("Részletek");
-        detailsButton.setStyle("-fx-background-color: #ff6600; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;");
+        Button detailsButton = new Button("RÉSZLETEK");
+        detailsButton.setPrefHeight(50);
+        detailsButton.setPrefWidth(120);
+        detailsButton.setStyle("-fx-background-color: #ff6600; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px; -fx-cursor: hand; -fx-background-radius: 5;");
         detailsButton.setOnAction(e -> goToMovieDetails(film));
 
         VBox actionBox = new VBox(detailsButton);
@@ -183,10 +203,11 @@ public class MovieListController implements BaseController {
     private void goToMovieDetails(Film film) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MovieDetails.fxml"));
-            Pane root = loader.load();
+            Parent root = loader.load();
 
             MovieDetailsController controller = loader.getController();
             controller.setStage(stage);
+            controller.setFilterDate(datePicker.getValue());
             controller.setMovie(film);
 
             stage.setScene(new Scene(root, stage.getWidth(), stage.getHeight()));
@@ -199,12 +220,10 @@ public class MovieListController implements BaseController {
     private void goBackToMain() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Main.fxml"));
-            Pane root = loader.load();
+            Parent root = loader.load();
             MainController controller = loader.getController();
             controller.setStage(stage);
             stage.setScene(new Scene(root));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException e) { e.printStackTrace(); }
     }
 }

@@ -60,5 +60,18 @@ public class FoglalasDAO {
         return f;
     }
 
+    public boolean delete(int foglalasId) {
+        String sql = "DELETE FROM Foglalas WHERE foglalasId = ?";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, foglalasId);
+            int affectedRows = pstmt.executeUpdate();
+            return affectedRows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 
 }

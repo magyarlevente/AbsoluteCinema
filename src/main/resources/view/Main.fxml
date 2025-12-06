@@ -13,15 +13,16 @@
       style="-fx-background-image: url('https://i.redd.it/u360o46cl3de1.png'); -fx-background-size: cover; -fx-background-position: center center; -fx-background-color: rgba(0, 0, 0, 0.6);">
 
     <children>
-        <VBox alignment="CENTER" maxWidth="400.0" prefHeight="450.0" prefWidth="400.0" spacing="15.0" style="-fx-background-color: rgba(44, 44, 44, 0.9); -fx-background-radius: 15; -fx-padding: 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.7), 20, 0.0, 0, 0);">
+        <VBox alignment="CENTER" maxWidth="400.0" prefHeight="480.0" prefWidth="400.0" spacing="15.0" style="-fx-background-color: rgba(44, 44, 44, 0.9); -fx-background-radius: 15; -fx-padding: 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.7), 20, 0.0, 0, 0);">
             <children>
+
                 <Label text="Absolute Cinema" textFill="WHITE">
                     <font>
                         <Font name="System Bold" size="36.0" />
                     </font>
                 </Label>
 
-                <VBox spacing="10" alignment="CENTER" style="-fx-padding: 10 0 20 0; -fx-border-color: transparent transparent #666 transparent;">
+                <VBox fx:id="loginPanel" spacing="10" alignment="CENTER" style="-fx-padding: 10 0 20 0; -fx-border-color: transparent transparent #666 transparent;">
                     <TextField fx:id="usernameField" promptText="Felhasználónév" style="-fx-background-radius: 5;"/>
                     <PasswordField fx:id="passwordField" promptText="Jelszó" style="-fx-background-radius: 5;"/>
 
@@ -33,9 +34,20 @@
                     </VBox>
                 </VBox>
 
+                <Label fx:id="welcomeLabel" textFill="WHITE" visible="false" managed="false">
+                    <font>
+                        <Font size="18.0" />
+                    </font>
+                    <VBox.margin>
+                        <Insets bottom="10.0" />
+                    </VBox.margin>
+                </Label>
+
                 <VBox alignment="CENTER" spacing="10.0">
                     <Button mnemonicParsing="false" onAction="#goToMovieList" prefHeight="45.0" prefWidth="280.0" style="-fx-background-color: #333; -fx-text-fill: white; -fx-font-weight: bold; -fx-border-color: #ff6600; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;" text="Filmek Műsoron" />
                     <Button mnemonicParsing="false" onAction="#goToMyBookings" prefHeight="40.0" prefWidth="280.0" style="-fx-background-color: #333; -fx-text-fill: white; -fx-cursor: hand;" text="Foglalásaim" />
+
+                    <Button fx:id="logoutButton" mnemonicParsing="false" onAction="#handleLogout" visible="false" managed="false" prefHeight="35.0" prefWidth="280.0" style="-fx-background-color: #555; -fx-text-fill: white; -fx-cursor: hand;" text="Kijelentkezés" />
                 </VBox>
             </children>
         </VBox>

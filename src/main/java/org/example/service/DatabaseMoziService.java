@@ -11,6 +11,9 @@ public class DatabaseMoziService implements MoziService {
     private final FoglalasDAO foglalasDAO = new FoglalasDAO();
     private final FelhasznaloDAO felhasznaloDAO = new FelhasznaloDAO();
 
+    // ÚJ: TeremDAO példányosítása
+    private final TeremDAO teremDAO = new TeremDAO();
+
     @Override
     public List<Film> getMindenFilm() { return filmDAO.findAll(); }
 
@@ -59,6 +62,10 @@ public class DatabaseMoziService implements MoziService {
         return foglalasDAO.findByFelhasznaloId(felhasznaloId);
     }
 
+    @Override
+    public boolean torolFoglalas(int foglalasId) {
+        return foglalasDAO.delete(foglalasId);
+    }
 
     @Override
     public Film getFilmById(int id) { return filmDAO.findById(id); }
@@ -68,4 +75,7 @@ public class DatabaseMoziService implements MoziService {
 
     @Override
     public Ulohely getUlohelyById(int id) { return ulohelyDAO.findById(id); }
+
+    @Override
+    public Terem getTeremById(int id) { return teremDAO.findById(id); }
 }
