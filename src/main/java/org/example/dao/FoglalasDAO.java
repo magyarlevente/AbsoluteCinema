@@ -49,29 +49,29 @@ public class FoglalasDAO {
         return list;
     }
 
+    // --- ÚJ METÓDUS: TÖRLÉS ---
+    public void delete(int foglalasId) {
+        String sql = "DELETE FROM Foglalas WHERE foglalasId = ?";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, foglalasId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     private Foglalas mapRow(ResultSet rs) throws SQLException {
         Foglalas f = new Foglalas();
         f.setFoglalasId(rs.getInt("foglalasId"));
         f.setFelhasznaloId(rs.getInt("felhasznaloId"));
         f.setIdopontId(rs.getInt("idopontId"));
         f.setUlohelyId(rs.getInt("ulohelyId"));
-        f.setFoglalasDatuma(LocalDateTime.parse(rs.getString("foglalasDatuma"), FORMATTER));
+        String dateStr = rs.getString("foglalasDatuma");
+        if (dateStr != null && !dateStr.isEmpty()) {
+            f.setFoglalasDatuma(LocalDateTime.parse(dateStr, FORMATTER));
+        }
         f.setFizetve(rs.getBoolean("fizetve"));
         return f;
     }
-
-    public boolean delete(int foglalasId) {
-        String sql = "DELETE FROM Foglalas WHERE foglalasId = ?";
-        try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, foglalasId);
-            int affectedRows = pstmt.executeUpdate();
-            return affectedRows > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-
 }

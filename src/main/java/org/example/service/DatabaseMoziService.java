@@ -62,9 +62,10 @@ public class DatabaseMoziService implements MoziService {
         return foglalasDAO.findByFelhasznaloId(felhasznaloId);
     }
 
+    // --- ÚJ IMPLEMENTÁCIÓ ---
     @Override
-    public boolean torolFoglalas(int foglalasId) {
-        return foglalasDAO.delete(foglalasId);
+    public void torolFoglalast(int foglalasId) {
+        foglalasDAO.delete(foglalasId);
     }
 
     @Override

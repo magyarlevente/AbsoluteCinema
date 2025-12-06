@@ -19,7 +19,11 @@ import org.example.service.DatabaseMoziService;
 import org.example.service.FoglalasiEredmeny;
 import org.example.service.MoziService;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MovieBookingController implements BaseController {
 
@@ -37,9 +41,11 @@ public class MovieBookingController implements BaseController {
 
     private final MoziService service = new DatabaseMoziService();
 
+    // Tároljuk a gombokat, hogy tudjunk rajta stílust váltani
     private Map<Ulohely, Button> seatButtons = new HashMap<>();
 
-    private final Set<Ulohely> selectedSeats = new HashSet<>();
+    // Lista a kiválasztott székeknek (Többes kijelölés!)
+    private List<Ulohely> selectedSeats = new ArrayList<>();
 
     @Override
     public void setStage(Stage stage) {
@@ -69,7 +75,7 @@ public class MovieBookingController implements BaseController {
 
         seatContainer.getChildren().clear();
         seatButtons.clear();
-        selectedSeats.clear();
+        selectedSeats.clear(); // Lista törlése belépéskor
 
         String currentRow = "";
         HBox rowBox = null;
@@ -95,40 +101,51 @@ public class MovieBookingController implements BaseController {
                 seatBtn.setStyle("-fx-background-color: #cc0000; -fx-text-fill: white; -fx-font-weight: bold;");
                 seatBtn.setDisable(true);
             } else {
-                seatBtn.setStyle("-fx-background-color: #00cc66; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;");
-                seatBtn.setOnAction(e -> toggleSeatSelection(u, seatBtn));
+                // Alapállapot: Zöld
+                seatBtn.setStyle(
+                        "-fx-background-color: #00cc66;" +
+                                "-fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;"
+                );
+                seatBtn.setOnAction(e -> toggleSeatSelection(u));
             }
 
             rowBox.getChildren().add(seatBtn);
             seatButtons.put(u, seatBtn);
         }
 
-        confirmButton.setDisable(false);
+        // Kezdőállapot: gomb tiltva
+        confirmButton.setText("Válassz helyet!");
+        confirmButton.setDisable(true);
         confirmButton.setOnAction(e -> confirmBooking());
     }
 
-    private void toggleSeatSelection(Ulohely u, Button btn) {
+    private void toggleSeatSelection(Ulohely u) {
+        Button btn = seatButtons.get(u);
+
         if (selectedSeats.contains(u)) {
+            // Ha már benne van -> kivesszük (Deselect)
             selectedSeats.remove(u);
             btn.setStyle("-fx-background-color: #00cc66; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;");
         } else {
+            // Ha nincs benne -> beletesszük (Select)
             selectedSeats.add(u);
-            btn.setStyle("-fx-background-color: #ffaa00; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-color: #ffffff; -fx-border-width: 2;");
+            btn.setStyle("-fx-background-color: #ffaa00; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;");
         }
 
+        // Alsó gomb frissítése
         if (selectedSeats.isEmpty()) {
+            confirmButton.setDisable(true);
             confirmButton.setText("Válassz helyet!");
         } else {
+            confirmButton.setDisable(false);
             confirmButton.setText("Foglalás megerősítése (" + selectedSeats.size() + " db)");
         }
     }
 
     private void confirmBooking() {
-        if (selectedSeats.isEmpty()) {
-            showAlert("Nincs kiválasztott hely", "Kérlek válassz legalább egy ülőhelyet!");
-            return;
-        }
+        if (selectedSeats.isEmpty()) return;
 
+        // 1. Megszerezzük a bejelentkezett felhasználót
         int userId;
         if (MainController.loggedInUser != null) {
             userId = MainController.loggedInUser.getFelhasznaloId();
@@ -137,44 +154,41 @@ public class MovieBookingController implements BaseController {
             return;
         }
 
-        int sikeres = 0;
-        int sikertelen = 0;
+        int sikeresDb = 0;
 
+        // 2. Ciklus a kiválasztott helyeken
         for (Ulohely u : selectedSeats) {
-            FoglalasiEredmeny eredmeny = service.megprobalFoglalni(currentIdopont.getIdopontId(), u.getUlohelyId(), userId);
+            var eredmeny = service.megprobalFoglalni(currentIdopont.getIdopontId(), u.getUlohelyId(), userId);
 
             if (eredmeny.isSiker()) {
-                sikeres++;
-                Button btn = seatButtons.get(u);
-                if (btn != null) {
-                    btn.setStyle("-fx-background-color: #cc0000; -fx-text-fill: white; -fx-font-weight: bold;");
-                    btn.setDisable(true);
-                }
-            } else {
-                sikertelen++;
+                sikeresDb++;
+                // Gomb pirosra váltása és tiltása
+                Button selectedBtn = seatButtons.get(u);
+                selectedBtn.setStyle("-fx-background-color: #cc0000; -fx-text-fill: white; -fx-font-weight: bold;");
+                selectedBtn.setDisable(true);
             }
         }
 
-        selectedSeats.clear();
-        confirmButton.setText("Foglalás kész!");
-        confirmButton.setDisable(true);
+        // Visszajelzés
+        if (sikeresDb == selectedSeats.size()) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Sikeres foglalás");
+            alert.setHeaderText(null);
+            alert.setContentText("Sikeresen lefoglaltál " + sikeresDb + " db helyet!");
+            alert.showAndWait();
 
-        String uzenet = sikeres + " hely sikeresen lefoglalva.";
-        if (sikertelen > 0) {
-            uzenet += "\n" + sikertelen + " helyet nem sikerült lefoglalni (már foglalt).";
+            goBackToList();
+        } else {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Részleges siker");
+            alert.setContentText("Csak " + sikeresDb + " helyet sikerült lefoglalni a kért " + selectedSeats.size() + "-ből.");
+            alert.showAndWait();
+
+            // Frissítjük a kijelölést (ami sikerült, az már piros, ami nem, az marad sárga vagy zöld)
+            selectedSeats.clear();
+            confirmButton.setText("Válassz helyet!");
+            confirmButton.setDisable(true);
         }
-
-        showAlert("Foglalás eredménye", uzenet);
-
-        // goBackToList();
-    }
-
-    private void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
     }
 
     @FXML

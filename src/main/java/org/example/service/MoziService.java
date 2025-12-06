@@ -4,8 +4,6 @@ import org.example.model.Film;
 import org.example.model.Idopont;
 import org.example.model.Ulohely;
 import org.example.model.Foglalas;
-import org.example.model.Felhasznalo;
-import org.example.model.Terem;
 
 import java.util.List;
 
@@ -29,10 +27,8 @@ public interface MoziService {
 
     List<Foglalas> getFoglalasokFelhasznalonak(int felhasznaloId);
 
-    boolean torolFoglalas(int foglalasId);
-
-    Terem getTeremById(int id);
-
+    // --- ÚJ METÓDUS ---
+    void torolFoglalast(int foglalasId);
 
     Film getFilmById(int id);
     Idopont getIdopontById(int id);

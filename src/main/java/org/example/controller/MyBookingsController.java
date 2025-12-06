@@ -4,12 +4,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.example.model.*;
@@ -27,6 +28,9 @@ public class MyBookingsController implements BaseController {
     private static final DateTimeFormatter DF = DateTimeFormatter.ofPattern("yyyy. MM. dd. HH:mm");
     private Felhasznalo currentUser;
 
+    // Ezt az osztályszintű változót kell használnunk a frissítéshez
+    private Felhasznalo currentUser;
+
     @FXML private VBox bookingsContainer;
 
     @Override
@@ -35,9 +39,15 @@ public class MyBookingsController implements BaseController {
     }
 
     public void initializeData(Felhasznalo user) {
-        this.currentUser = user;
+        this.currentUser = user; // Elmentjük a felhasználót
         bookingsContainer.getChildren().clear();
 
+        if (user == null) {
+            bookingsContainer.getChildren().add(new Label("Hiba: Nincs bejelentkezett felhasználó."));
+            return;
+        }
+
+        // 1. Foglalások lekérése
         List<Foglalas> foglalasok = service.getFoglalasokFelhasznalonak(user.getFelhasznaloId());
 
         if (foglalasok.isEmpty()) {
@@ -68,9 +78,11 @@ public class MyBookingsController implements BaseController {
 
             details.getChildren().addAll(lblCim, lblDatum, lblSzek);
 
-            Region spacer = new Region();
+            // --- TÁVTARTÓ (Spacer) ---
+            Pane spacer = new Pane();
             HBox.setHgrow(spacer, Priority.ALWAYS);
 
+            // --- TÖRLÉS GOMB ---
             Button deleteBtn = new Button("Törlés");
             deleteBtn.setStyle("-fx-background-color: #cc0000; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;");
             deleteBtn.setOnAction(e -> handleDelete(f));
@@ -81,12 +93,14 @@ public class MyBookingsController implements BaseController {
     }
 
     private void handleDelete(Foglalas f) {
-        boolean siker = service.torolFoglalas(f.getFoglalasId());
-        if (siker) {
-            initializeData(currentUser);
-        } else {
-            System.out.println("Hiba a törléskor");
-        }
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Biztosan törölni szeretnéd a foglalást?", ButtonType.YES, ButtonType.NO);
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.YES) {
+                service.torolFoglalast(f.getFoglalasId());
+                // Lista frissítése az elmentett felhasználóval
+                initializeData(currentUser);
+            }
+        });
     }
 
     @FXML
