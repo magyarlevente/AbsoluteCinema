@@ -8,6 +8,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+//Ez az osztály felel azért, hogy megtudjuk, mikor és melyik teremben vetítenek egy filmet
+
 public class IdopontDAO {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -23,7 +25,7 @@ public class IdopontDAO {
                 i.setIdopontId(rs.getInt("IdopontId"));
                 i.setFilmId(rs.getInt("filmId"));
                 i.setTeremId(rs.getInt("teremId"));
-                i.setJegyAr(rs.getInt("jegyAr"));
+
                 i.setKezdesIdopont(LocalDateTime.parse(rs.getString("kezdesIdopont"), FORMATTER));
                 list.add(i);
             }

@@ -2,20 +2,20 @@ package org.example.model;
 
 import java.time.LocalDateTime;
 
+//konkret vetites peldanyanak a modelje
+
 public class Idopont {
     private int IdopontId;
     private LocalDateTime kezdesIdopont;
     private int filmId;
     private int teremId;
-    private int jegyAr;
 
     public Idopont() {}
 
-    public Idopont(LocalDateTime kezdesIdopont, int filmId, int teremId, int jegyAr) {
+    public Idopont(LocalDateTime kezdesIdopont, int filmId, int teremId) {
         this.kezdesIdopont = kezdesIdopont;
         this.filmId = filmId;
         this.teremId = teremId;
-        this.jegyAr = jegyAr;
     }
 
     public int getIdopontId() {
@@ -50,11 +50,4 @@ public class Idopont {
         this.teremId = teremId;
     }
 
-    public int getJegyAr() {
-        return jegyAr;
-    }
-
-    public void setJegyAr(int jegyAr) {
-        this.jegyAr = jegyAr;
-    }
 }

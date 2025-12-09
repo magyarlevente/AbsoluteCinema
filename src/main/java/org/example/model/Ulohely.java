@@ -1,5 +1,7 @@
 package org.example.model;
 
+//konkret ulohelyet reprezental
+
 public class Ulohely {
 
     private int ulohelyId;

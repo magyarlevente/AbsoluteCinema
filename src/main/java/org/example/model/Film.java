@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+// Film objektum moddelezese
+
 public class Film
 {
     private String cim;

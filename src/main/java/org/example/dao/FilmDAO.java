@@ -7,6 +7,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+//az adatbazisbol kiolvassa a filmeket es atalakitja Film objektumokka
+
 public class FilmDAO {
     public List<Film> findAll() {
         List<Film> films = new ArrayList<>();

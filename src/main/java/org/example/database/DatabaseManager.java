@@ -9,6 +9,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Random;
 
+// Indításkor létrehozza az adatbázist és a táblákat, ha azok nem léteznek.
+// automatikusan feltölti kezdőadatokkal: filmekkel, termekkel, vetítésekkel,
+
 public class DatabaseManager {
     private static final String URL = "jdbc:sqlite:absolute_cinema.db";
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -50,8 +53,6 @@ public class DatabaseManager {
 
             if (!vanAdat) {
                 System.out.println("Adatok betöltése (Működő képekkel + 7 napos generálással)...");
-
-                // ---------------- 1. FILM ADATOK (A TE LINKEIDDEL) ----------------
 
                 // Cinema City filmek (ID: 1-5)
                 stmt.execute("INSERT INTO Film (cim, jatekido, mufaj, korhatar, filmLeiras, poszterUrl) VALUES " +

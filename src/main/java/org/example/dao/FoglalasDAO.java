@@ -8,6 +8,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+//beleptetes, regisztracio - ez menti az adatokat az adatbazisba: INSERT
+
 public class FoglalasDAO {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -72,6 +74,4 @@ public class FoglalasDAO {
             return false;
         }
     }
-
-
 }

@@ -1,9 +1,10 @@
 package org.example.model;
 
+//vetitesek helyszinenek azonositasara hasznaljuk
+
 public class Terem {
     private int teremId;
     private String teremNev;
-    private int ulohelyekSzama;
 
     public Terem() {}
 
@@ -24,11 +25,4 @@ public class Terem {
         this.teremNev = teremNev;
     }
 
-    public int getUlohelyekSzama() {
-        return ulohelyekSzama;
-    }
-
-    public void setUlohelyekSzama(int ulohelyekSzama) {
-        this.ulohelyekSzama = ulohelyekSzama;
-    }
 }

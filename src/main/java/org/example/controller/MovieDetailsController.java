@@ -20,6 +20,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+//kiirja az adott Film objektum adatait es a hozzatartozo vetitesi idopontokat
+
 public class MovieDetailsController implements BaseController {
 
     private Stage stage;

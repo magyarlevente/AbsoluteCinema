@@ -1,5 +1,9 @@
 package org.example.model;
 
+/**
+ * Felhasznalo modellezese
+ */
+
 public class Felhasznalo
 {
     private String felhasznaloNev;

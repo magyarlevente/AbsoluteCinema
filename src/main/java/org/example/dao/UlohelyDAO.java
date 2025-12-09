@@ -6,6 +6,10 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+//  Kapcsolatot teremt az adatbázis 'Ulohely' táblájával.
+//  Ez az osztály felelős azért, hogy lekérdezze egy adott vetítéshez tartozó
+//  terem elrendezését (székeit), hogy a grafikus felületet fel tudjuk építeni.
+
 public class UlohelyDAO {
     public List<Ulohely> findByIdopont(int idopontId) {
         List<Ulohely> seats = new ArrayList<>();

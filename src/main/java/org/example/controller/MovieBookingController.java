@@ -21,17 +21,19 @@ import org.example.service.MoziService;
 
 import java.util.*;
 
+
+//szekfoglalas controllere
+
+
 public class MovieBookingController implements BaseController {
 
     private Stage stage;
     private Film currentFilm;
     private Idopont currentIdopont;
 
-    // HEADER ELEMEK
     @FXML private Button backButton;
     @FXML private Label headerTitleLabel;
 
-    // FŐ ELEMEK
     @FXML private VBox seatContainer;
     @FXML private Button confirmButton;
 

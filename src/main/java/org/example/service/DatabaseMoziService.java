@@ -4,14 +4,20 @@ import org.example.dao.*;
 import org.example.model.*;
 import java.util.List;
 
+/**
+ * MoziService interfesz konkret implementacioja, uzleti logika leirasa
+ * kapcsolat a controller es a DAO retegek kozott: Grafikus felulet - Adatbazis kozott
+ * feladatai: - ellenorzi hogy egy foglalas lehetseges-e
+ *            - kezeli a regisztraciot es a belepest
+ *            - DAO-tol kapott adatokat tovabbitja a feluletnek
+ */
+
 public class DatabaseMoziService implements MoziService {
     private final FilmDAO filmDAO = new FilmDAO();
     private final IdopontDAO idopontDAO = new IdopontDAO();
     private final UlohelyDAO ulohelyDAO = new UlohelyDAO();
     private final FoglalasDAO foglalasDAO = new FoglalasDAO();
     private final FelhasznaloDAO felhasznaloDAO = new FelhasznaloDAO();
-
-    // ÚJ: TeremDAO példányosítása
     private final TeremDAO teremDAO = new TeremDAO();
 
     @Override
@@ -50,11 +56,6 @@ public class DatabaseMoziService implements MoziService {
         Felhasznalo user = felhasznaloDAO.login(u, p);
         if (user != null) return new AuthEredmeny(true, "Sikeres belépés!", user);
         return new AuthEredmeny(false, "Hibás adatok.");
-    }
-
-    @Override
-    public ErtekelesEredmeny megprobalErtekelni(int filmId, int felhasznaloId, int pontszam, String szovegesErtekeles) {
-        return new ErtekelesEredmeny(false, "Nincs implementálva.");
     }
 
     @Override

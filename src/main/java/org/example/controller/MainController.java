@@ -17,6 +17,8 @@ import org.example.service.MoziService;
 
 import java.io.IOException;
 
+//a fomenu es bejelentkezes controllere.
+
 public class MainController {
 
     private Stage stage;
@@ -145,6 +147,6 @@ public class MainController {
 
     @FXML
     public void goToProfile() {
-        System.out.println("Profil - Még nincs kész");
+        System.out.println("Profil");
     }
 }

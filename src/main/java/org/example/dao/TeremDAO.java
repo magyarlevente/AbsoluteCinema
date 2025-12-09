@@ -7,6 +7,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+//feladata, hogy ID alapján visszaadja a terem nevét
+
 public class TeremDAO {
 
     public Terem findById(int id) {
@@ -19,7 +21,7 @@ public class TeremDAO {
                 Terem t = new Terem();
                 t.setTeremId(rs.getInt("teremId"));
                 t.setTeremNev(rs.getString("teremNev"));
-                t.setUlohelyekSzama(rs.getInt("ulohelyekSzama"));
+
                 return t;
             }
         } catch (SQLException e) {

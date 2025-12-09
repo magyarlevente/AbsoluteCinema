@@ -26,6 +26,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
+//filmek kilistazasa, lekeri a filmeket a service-tol majd kilistazza azokat, szuresert is felelos, datum, hely, kategoria szerint
+
 public class MovieListController implements BaseController {
 
     private Stage stage;

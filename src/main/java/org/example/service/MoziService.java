@@ -9,6 +9,10 @@ import org.example.model.Terem;
 
 import java.util.List;
 
+
+//ez az interfész definiálja az összes funkciót es azt hogy mit kell megvalósítani azoknak az osztályoknak
+// amelyek ezt az interfészt implementaljak
+
 public interface MoziService {
 
     List<Film> getMindenFilm();
@@ -25,16 +29,15 @@ public interface MoziService {
 
     AuthEredmeny megprobalBejelentkezni(String felhasznalonev, String jelszo);
 
-    ErtekelesEredmeny megprobalErtekelni(int filmId, int felhasznaloId, int pontszam, String szovegesErtekeles);
-
     List<Foglalas> getFoglalasokFelhasznalonak(int felhasznaloId);
 
     boolean torolFoglalas(int foglalasId);
 
     Terem getTeremById(int id);
 
-
     Film getFilmById(int id);
+
     Idopont getIdopontById(int id);
+
     Ulohely getUlohelyById(int id);
 }

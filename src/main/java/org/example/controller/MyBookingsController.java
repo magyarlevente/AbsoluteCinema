@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+//Listázza a bejelentkezett felhasználó korábbi foglalásait, torlest is megvalosit
+
 public class MyBookingsController implements BaseController {
 
     private Stage stage;

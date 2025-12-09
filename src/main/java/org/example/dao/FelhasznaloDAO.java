@@ -4,6 +4,8 @@ import org.example.database.DatabaseManager;
 import org.example.model.Felhasznalo;
 import java.sql.*;
 
+//felhasznalo ellenorzese ha letezik, regisztracio elvegzese es mentese adatbazisba
+
 public class FelhasznaloDAO {
     public Felhasznalo login(String username, String password) {
         String sql = "SELECT * FROM Felhasznalo WHERE felhasznaloNev = ? AND jelszoHASH = ?";
