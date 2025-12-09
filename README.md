@@ -31,4 +31,4 @@ Az AbsoluteCinema egy Java alapú asztali alkalmazás, amely lehetővé teszi, h
 | Magyar Levente | Backend fejlesztő | Üzleti logika, osztályok, foglaláskezelés |
 | Tarr András | Frontend fejlesztő | JavaFX felület, vezérlők |
 |  Brekovszki László | Frontend fejlesztő | Scene Builder GUI tervezés |
-| Hudák Péter | Adatkezelés, tesztelés | JSON kezelés, egységtesztek |
+| Hudák Péter | Adatkezelés, tesztelés | Adatbazis |
